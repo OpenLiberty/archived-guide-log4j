@@ -133,7 +133,9 @@ The final approach is to set the log4j configuration via server's JVM arguments.
 Once the server is restarted, the Log4j config file specified in the directory will be picked up by the server.
 
 It's possible that a user might have configured the Log4j config file using more than one of the aforementioned ways. Then there will arise the issue where some method will be overriding the other methods. There are no official Log4j documentation or Liberty documentation on how it should behave. My personal tests showed that the jvm.options is able to override all the other configurations. Configuration done in server.xml will be overriding the Log4j config files placed in global libraries directory. What's interesting is that the Log4j config file packaged in the application's war file can override the ones set in server.xml, in the meantime, it can be overwritten by Log4j config files in either of the global shared libraries. So the there is not a commutative overriding rule of having multiple Log4j config files in place. The rules can be best summarized in the diagram below.
+----
 image::https://developer.ibm.com/wasdev/wp-content/uploads/sites/9/2018/02/Screen-Shot-2018-02-04-at-11.57.22-PM-1024x683.png[graph,640,480]
+----
 
 == Great work! You are done!
 Congratulations, you've just built an Open Liberty application with a robust Log4j setup. Once you start the Liberty server instance, you should be able to view all your application logs being served just the way you like it. 
