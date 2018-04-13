@@ -18,6 +18,8 @@ cd log4jSample/start
 The following instruction describes the typical steps involved in using Log4j loggers in a Liberty Application. 
 In the IDE of choice or an editor of your choice, open the pom.xml file, which is at the root of the project.
 Add the Log4j dependency to the <dependencies> section of the pom.xml file.
+
+[source, xml, indent=0]
 ----
 <dependency>
         <groupId>org.apache.logging.log4j</groupId>
@@ -32,11 +34,15 @@ Add the Log4j dependency to the <dependencies> section of the pom.xml file.
 ----
 
 In the HelloServlets class, get a logger instance. Log4j loggers are always acquired by calling the LogManager.getLogger() instead of creating a new Logger object. One thing to note is that the LogManager and Logger class referred in the code is from package org.apache.logging.log4j, not the java.util.logging.
+
+[source, Java, indent=0]
 ----
 private static final Logger LOGGER = LogManager.getLogger(LibertyServlet.class.getName());
 ----
 
 The actual use of Log4j Logger object is a lot like the java logging Logger, just log with the message string and the log level. 
+
+[source, Java, indent=0]
 ----
 LOGGER.info("hello liberty servlet info message!");
 LOGGER.debug("hello liberty servlet debug message!");
@@ -51,6 +57,8 @@ The next step in the configuration is to set up the Log4j configuration file. In
 While there are a lot of things you can work with the Log4j config file, the primary usages for the config file are to configure two things: 1. loggers and 2. appenders. Logger configuration would allow the user to config the logging level for each of the loggers defined and specifying the appenders to be used for each logger. In the meantime, the appender configuration gives the user the control to define the output location and the output format of their log files. Log4j provides a couple dozens of predefined Appender classes for users to work with, which saves the user from developing its own mechanism to output to different locations and formats. The packaged appenders range from basic ones such as Console or File appenders to the more specific JDBC or Kafka appenders that will satisfy majority of the projects' logging needs. 
 
 In this example, we'll be creating a file appender and a console appender. The file appender will be rolling over on a daily basis, and will be writing to the file in a custom format we specified in our log4j2.xml file. The console appender will be outputting the Log4j JSON formatted message to stdout. In the logger configuration, we will be redirecting all the debug level logs from the LibertyServlet to our Daily rolling file appender and all the info level logs to the console appender. Also, remember what we mentioned previously in the introduction, a user can only specify log level for different loggers either using the Log4j config file or programmatically in the code. They will not be able to set up log levels in the Liberty server's server.xml as they would for the default java logging loggers.
+
+[source, xml, indent=0]
 ----
 <Configuration>
   <Properties>
@@ -87,6 +95,8 @@ When writing Log4j config files, be mindful when using Log4j provided classes. S
 "Error 404: javax.servlet.UnavailableException: SRVE0203E: Servlet [application.servlet.LibertyServlet]: application.servlet.LibertyServlet was found but is missing another required class. SRVE0206E: This error typically implies that the servlet was originally compiled with classes which cannot be located by the server. SRVE0187E: Check your classpath to ensure that all classes required by the servlet are present.SRVE0210I: This problem can be debugged by recompiling the servlet using only the classes in the application's runtime classpath SRVE0234I: Application class path=[com.ibm.ws.classloading.internal.ThreadContextClassLoader@400b9abe] "
 
 We'll need to add the dependency in our pom.xml file like so:
+
+[source, xml, indent=0]
 ----
 <dependency>
     <groupId>com.fasterxml.jackson.core</groupId>
@@ -107,6 +117,8 @@ Often times, developers find the needs to modify the log configuration from time
 
 === Option 2: Configure in the server.xml
 The second approach is to config comonLibraryRef using server.xml file of an Open Liberty Server. A user can specify a directory that has the log4j config file stored, and config the server to pick up files stored in that directory during class loading time.
+
+[source, xml, indent=0]
 ----
  ...
      <library id="log4jConfig">
@@ -133,9 +145,9 @@ The final approach is to set the log4j configuration via server's JVM arguments.
 Once the server is restarted, the Log4j config file specified in the directory will be picked up by the server.
 
 It's possible that a user might have configured the Log4j config file using more than one of the aforementioned ways. Then there will arise the issue where some method will be overriding the other methods. There are no official Log4j documentation or Liberty documentation on how it should behave. My personal tests showed that the jvm.options is able to override all the other configurations. Configuration done in server.xml will be overriding the Log4j config files placed in global libraries directory. What's interesting is that the Log4j config file packaged in the application's war file can override the ones set in server.xml, in the meantime, it can be overwritten by Log4j config files in either of the global shared libraries. So the there is not a commutative overriding rule of having multiple Log4j config files in place. The rules can be best summarized in the diagram below.
-----
+
 image::https://developer.ibm.com/wasdev/wp-content/uploads/sites/9/2018/02/Screen-Shot-2018-02-04-at-11.57.22-PM-1024x683.png[graph,640,480]
-----
+
 
 == Great work! You are done!
 Congratulations, you've just built an Open Liberty application with a robust Log4j setup. Once you start the Liberty server instance, you should be able to view all your application logs being served just the way you like it. 
