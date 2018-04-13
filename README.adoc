@@ -151,3 +151,5 @@ image::https://developer.ibm.com/wasdev/wp-content/uploads/sites/9/2018/02/Scree
 
 == Great work! You are done!
 Congratulations, you've just built an Open Liberty application with a robust Log4j setup. Once you start the Liberty server instance, you should be able to view all your application logs being served just the way you like it. 
+
+https://raw.githubusercontent.com/OpenLiberty/guides-common/master/finish.adoc
