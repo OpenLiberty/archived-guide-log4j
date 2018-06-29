@@ -1,4 +1,8 @@
 = Deploying applications to Open Application Server Liberty with Log4j support
+
+[.hidden]
+NOTE: This repository contains the guide documentation source. To view the guide in published form, view it on the https://openliberty.io/guides/{projectid}.html[Open Liberty website].
+
 Frank Ji <frankji@ca.ibm.com>
 
 == What you will Learn
