@@ -1,10 +1,27 @@
+// Copyright (c) 2018 IBM Corporation and others.
+// Licensed under Creative Commons Attribution-NoDerivatives
+// 4.0 International (CC BY-ND 4.0)
+//   https://creativecommons.org/licenses/by-nd/4.0/
+//
+// Contributors:
+//   IBM Corporation
+:projectid: microprofile-metrics
+:page-layout: guide
+:page-duration: 15 minutes
+:page-releasedate: 2018-03-15
+:page-description: Learn how to deploy application to Open Application Server Liberty with Log4j
+:page-tags: ['logging', 'log4j', 'serviceability']
+:page-permalink: /guides/{projectid}
+:page-related-guides: []
+:common-includes: https://raw.githubusercontent.com/OpenLiberty/guides-common/master
+:source-highlighter: prettify
 = Deploying applications to Open Application Server Liberty with Log4j support
 Frank Ji <frankji@ca.ibm.com>
 
-== What you will Learn
+== What you'll learn
 You will be introduced to the popular Apache logging framework Log4j, and learn how to add logs to your Open Liberty applications using Log4j. At the end of this guide, you will know how to add Log4j to your Open Liberty application, writing log statement and configuring the Log4j configuration file for advanced logging formats and rules.
 
-=== Why use Log4j when there is Java Logging API
+=== Why use Log4j
 The java.util.logging or more commonly known as the java logging API serves as a very capable logging framework for many. However, the Java logging API lacks the flexibility for developers to define customized logging output options such as format and log files on demand. The developers would often need to implement some new Formatter and LogHandler codes should the logging requirement changed. Changing production code can be both time consuming and many times, not a practical solution.This part is where Log4j comes into play. Not only it’s a feature-packed logging framework; the ability to change one’s logging output on demand is where it truly shines. Before going into all the great things about Log4j, there are couple caveats of using Log4j with Open Liberty that should be noted by the readers. Open Liberty does not control the log levels of Log4j Loggers in the server.xml file, it also doesn’t consume log entries, and thus it won't output the logs to the default messages.log when Log4j is used instead of java logging. The logging level and output options are solely configured through Log4j config file which will be discussed in the later sections. That being said, Log4j is a powerful framework that should be worth looking for advanced logging when developing Liberty applications.
 
 == Getting started
@@ -14,8 +31,7 @@ git clone https://github.com/openliberty/log4jSample.git
 cd log4jSample/start
 ----
 
-== Adding Log4j Loggers to a Liberty Application
-The following instruction describes the typical steps involved in using Log4j loggers in a Liberty Application. 
+== Adding Log4j loggers to a Liberty application
 In the IDE of choice or an editor of your choice, open the pom.xml file, which is at the root of the project.
 Add the Log4j dependency to the <dependencies> section of the pom.xml file.
 
@@ -33,26 +49,26 @@ Add the Log4j dependency to the <dependencies> section of the pom.xml file.
 </dependency>
 ----
 
-In the HelloServlets class, get a logger instance. Log4j loggers are always acquired by calling the LogManager.getLogger() instead of creating a new Logger object. One thing to note is that the LogManager and Logger class referred in the code is from package org.apache.logging.log4j, not the java.util.logging.
+In the /finish/src/main/java/application/servlet/LibertyServlet.java, get a logger instance. Log4j loggers are always acquired by calling the LogManager.getLogger() instead of creating a new Logger object. One thing to note is that the LogManager and Logger class referred in the code is from package org.apache.logging.log4j, not the java.util.logging.
 
-[source, Java, indent=0]
+[source, java, indent=0]
 ----
 private static final Logger LOGGER = LogManager.getLogger(LibertyServlet.class.getName());
 ----
 
 The actual use of Log4j Logger object is a lot like the java logging Logger, just log with the message string and the log level. 
 
-[source, Java, indent=0]
+[source, java, indent=0]
 ----
 LOGGER.info("hello liberty servlet info message!");
 LOGGER.debug("hello liberty servlet debug message!");
 LOGGER.log(Level.WARN, "hello liberty servlet warning message!");
 ----
 
-For the most part, that's all there needs to be done code wise to start developing an application using Log4j as the framework. For the people who are serious about their application logs, like writing log to a database instead of files, or having custom output format for their log entries, the good news is that all this can be done in the Log4j config file without changing the existing application code.
+If you are looking to do some advanced logging tasks such as writing log to a database instead of files, or having custom output format for their log entries, the good news is that all this can be done in the Log4j config file without changing the existing application code.
 
 == Build the log4j config file
-The next step in the configuration is to set up the Log4j configuration file. In Log4j 2.x, the config file can be prepared in one of the following formats: properties file, JSON, YAML, and XML.  You can use whichever format you are most comfortable with as each format will get the job done. My personal preference is the XML format as it's one of the more popular choices among the developer community.
+In Log4j 2.x, the config file can be prepared in one of the following formats: properties file, JSON, YAML, and XML.  You can use whichever format you are most comfortable with as each format will get the job done. My personal preference is the XML format as it's one of the more popular choices among the developer community.
 
 While there are a lot of things you can work with the Log4j config file, the primary usages for the config file are to configure two things: 1. loggers and 2. appenders. Logger configuration would allow the user to config the logging level for each of the loggers defined and specifying the appenders to be used for each logger. In the meantime, the appender configuration gives the user the control to define the output location and the output format of their log files. Log4j provides a couple dozens of predefined Appender classes for users to work with, which saves the user from developing its own mechanism to output to different locations and formats. The packaged appenders range from basic ones such as Console or File appenders to the more specific JDBC or Kafka appenders that will satisfy majority of the projects' logging needs. 
 
@@ -92,7 +108,7 @@ In this example, we'll be creating a file appender and a console appender. The f
 
 When writing Log4j config files, be mindful when using Log4j provided classes. Some of this classes will require additional dependencies during runtime, and will not be caught when compiling the maven project. In this example, JsonLayout used for Console logging would need classes from com.fasterxml.jackson.core during runtime. Failing to include the Jackson package would result in the following error when visiting the servlet:
 
-"Error 404: javax.servlet.UnavailableException: SRVE0203E: Servlet [application.servlet.LibertyServlet]: application.servlet.LibertyServlet was found but is missing another required class. SRVE0206E: This error typically implies that the servlet was originally compiled with classes which cannot be located by the server. SRVE0187E: Check your classpath to ensure that all classes required by the servlet are present.SRVE0210I: This problem can be debugged by recompiling the servlet using only the classes in the application's runtime classpath SRVE0234I: Application class path=[com.ibm.ws.classloading.internal.ThreadContextClassLoader@400b9abe] "
+``Error 404: javax.servlet.UnavailableException: SRVE0203E: Servlet [application.servlet.LibertyServlet]: application.servlet.LibertyServlet was found but is missing another required class. SRVE0206E: This error typically implies that the servlet was originally compiled with classes which cannot be located by the server. SRVE0187E: Check your classpath to ensure that all classes required by the servlet are present.SRVE0210I: This problem can be debugged by recompiling the servlet using only the classes in the application's runtime classpath SRVE0234I: Application class path=[com.ibm.ws.classloading.internal.ThreadContextClassLoader@400b9abe] ``
 
 We'll need to add the dependency in our pom.xml file like so:
 
@@ -120,13 +136,31 @@ The second approach is to config comonLibraryRef using server.xml file of an Ope
 
 [source, xml, indent=0]
 ----
+ <server description="Sample Liberty server">
+
+    <featureManager>
+        <feature>servlet-3.1</feature>
+    </featureManager>
+
+
+    <httpEndpoint httpPort="${default.http.port}" httpsPort="${default.https.port}"
+        id="defaultHttpEndpoint">
+    <tcpOptions soReuseAddr="true"/>
+    
+    </httpEndpoint>
+    
+    <library id="log4jConfig">
+          <folder dir="/{directory containning log4j config file}" scanInterval="5s" />
+    </library>
+
+    <webApplication id="sample.servlet" location="sample.servlet.war" name="sample.servlet"/>
+          <classloader commonLibraryRef="log4jConfig"/>
+    </webApplication>
+    
+</server>
+
  ...
-     <library id="log4jConfig">
-            <folder dir="/{directory containning log4j config file}" scanInterval="5s" />
-     </library>
-     <webApplication id="sample.servlet" location="sample.servlet.war" name="sample.servlet"/>
-            <classloader commonLibraryRef="log4jConfig"/>
-     </webApplication>
+
  ...
 ----
 
