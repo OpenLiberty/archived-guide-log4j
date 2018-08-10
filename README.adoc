@@ -15,12 +15,10 @@
 :page-related-guides: []
 :common-includes: https://raw.githubusercontent.com/OpenLiberty/guides-common/master
 :source-highlighter: prettify
-= Deploying applications to Open Application Server Liberty with Log4j support
+= Deploying applications with Log4j support
 
 [.hidden]
 NOTE: This repository contains the guide documentation source. To view the guide in published form, view it on the https://openliberty.io/guides/{projectid}.html[Open Liberty website].
-
-Frank Ji <frankji@ca.ibm.com>
 
 == What you'll learn
 You will be introduced to the popular Apache logging framework Log4j, and learn how to add logs to your Open Liberty applications using Log4j. At the end of this guide, you will know how to add Log4j to your Open Liberty application, writing log statement and configuring the Log4j configuration file for advanced logging formats and rules.
